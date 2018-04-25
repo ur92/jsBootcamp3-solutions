@@ -90,13 +90,13 @@ function Groups(rl, users) {
 
     function printList() {
         for (let groupname in groups) {
-            console.log(groupname);
+            console.log('* ', groupname);
         }
     }
 
     function printGroupsAndUsersList() {
         for (let groupname in groups) {
-            console.log('* ' + groupname);
+            console.log('* ', groupname);
             for (let username in groups[groupname]) {
                 console.log('*** ' + username + ' (' + users.getUser(username).age + ')');
             }
