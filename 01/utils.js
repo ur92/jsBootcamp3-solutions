@@ -7,7 +7,7 @@ module.exports = function (rl) {
     function showOptions(type) {
         console.log('');
         console.log('=== ' + type + ' Management ===');
-        console.log('1. Create ' + type);
+        console.log('1. Create ' + ((type === 'User') ? 'or Update ' + type : type));
         console.log('2. Delete ' + type);
         console.log('3. List ' + type + 's');
         console.log('4. Back');

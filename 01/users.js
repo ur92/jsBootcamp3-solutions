@@ -10,7 +10,7 @@ function Users(rl) {
     // public methods
     return {
         menu: menu,
-        addUser: addUser,
+        addUser: addOrUpdateUser,
         removeUser: removeUser,
         printList: printList,
         getUser: getUser
@@ -24,7 +24,7 @@ function Users(rl) {
                 case '1':
                     rl.question('enter user details with this format: USERNAME,AGE,PASSWORD: ',
                         function (userDetails) {
-                            addUser(userDetails.split(','));
+                            addOrUpdateUser(userDetails.split(','));
                             backToMainMenu();
                         });
                     break;
@@ -45,12 +45,17 @@ function Users(rl) {
         });
     }
 
-    function addUser(userDetailsArray) {
+    function addOrUpdateUser(userDetailsArray) {
         let username = userDetailsArray[0];
         let age = userDetailsArray[1];
         let password = userDetailsArray[2];
 
-        if (!getUser(username)) {
+        let userToUpdate = getUser(username);
+        if (userToUpdate) { // update
+            userToUpdate.age = age || userToUpdate.age;
+            userToUpdate.password = password || userToUpdate.password;
+        }
+        else { // create new
             users[username] = {
                 age: age,
                 password: password
