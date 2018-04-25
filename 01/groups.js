@@ -7,47 +7,63 @@ function Groups(rl, users) {
     let groups = {};
     const utils = new Utils(rl);
 
+    let actions = {
+        1: function (backToMainMenu) {
+            rl.question('enter group name to add: ', function (groupName) {
+                addGroup(groupName);
+                backToMainMenu();
+            });
+        },
+        2: function (backToMainMenu) {
+            rl.question('enter group name to remove: ', function (groupName) {
+                removeGroup(groupName);
+                backToMainMenu();
+            });
+        },
+        3: function (backToMainMenu) {
+            printList();
+            backToMainMenu();
+        }
+    };
+
+    let usersToGroupActions = {
+        1: function (backToMainMenu) {
+            rl.question('enter user to add to group like USERNAME,GROUP: ',
+                function (userGroupArgs) {
+                    let userGroupArray = userGroupArgs.split(',');
+                    addUserToGroup(userGroupArray[0], userGroupArray[1]);
+                    backToMainMenu();
+                });
+        },
+        2: function (backToMainMenu) {
+            rl.question('enter user to remove from group like USERNAME,GROUP: ',
+                function (userGroupArgs) {
+                    let userGroupArray = userGroupArgs.split(',');
+                    removeUserFromGroup(userGroupArray[0], userGroupArray[1]);
+                    backToMainMenu();
+                });
+        },
+        3: function (backToMainMenu) {
+            printGroupsAndUsersList();
+            backToMainMenu();
+        }
+    };
+
     // public methods
     return {
         menu: menu,
-        manageUsersMenu: manageUsersMenu,
-        addGroup: addGroup,
-        removeGroup: removeGroup,
-        printList: printList,
-        printGroupsAndUsers: printGroupsAndUsersList,
-        addUserToGroup: addUserToGroup,
-        removeUserFromGroup: removeUserFromGroup
+        usersToGroupMenu: usersToGroupMenu
     };
 
-    // prototyping??
+    // private mathods
     function menu(backToMainMenu) {
         utils.showOptions('Group');
         utils.readSelectedCommand(function (selection) {
-            switch (selection) {
-                case '1':
-                    rl.question('enter group name to add: ', function (groupName) {
-                        addGroup(groupName);
-                        backToMainMenu();
-                    });
-                    break;
-                case '2':
-                    rl.question('enter group name to remove: ', function (groupName) {
-                        removeGroup(groupName);
-                        backToMainMenu();
-                    });
-                    break;
-                case '3':
-                    printList();
-                    backToMainMenu();
-                    break;
-                case '4':
-                    backToMainMenu();
-                    break;
-            }
+            actions[selection] ? actions[selection](backToMainMenu) : backToMainMenu();
         });
     }
 
-    function manageUsersMenu(backToMainMenu) {
+    function usersToGroupMenu(backToMainMenu) {
         console.log('');
         console.log('=== User association Management ===');
         console.log('1. Add user to group');
@@ -56,31 +72,7 @@ function Groups(rl, users) {
         console.log('4. Back');
 
         utils.readSelectedCommand(function (selection) {
-            switch (selection) {
-                case '1':
-                    rl.question('enter user to add to group like USERNAME,GROUP: ',
-                        function (userGroupArgs) {
-                            let userGroupArray = userGroupArgs.split(',');
-                            addUserToGroup(userGroupArray[0], userGroupArray[1]);
-                            backToMainMenu();
-                        });
-                    break;
-                case '2':
-                    rl.question('enter user to remove from group like USERNAME,GROUP: ',
-                        function (userGroupArgs) {
-                            let userGroupArray = userGroupArgs.split(',');
-                            removeUserFromGroup(userGroupArray[0], userGroupArray[1]);
-                            backToMainMenu();
-                        });
-                    break;
-                case '3':
-                    printGroupsAndUsersList();
-                    backToMainMenu();
-                    break;
-                case '4':
-                    backToMainMenu();
-                    break;
-            }
+            usersToGroupActions[selection] ? usersToGroupActions[selection](backToMainMenu) : backToMainMenu();
         });
     }
 

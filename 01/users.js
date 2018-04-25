@@ -4,44 +4,40 @@ module.exports = Users;
 
 function Users(rl) {
     // private properties
-    let users={};
+    let users = {};
     const utils = new Utils(rl);
+
+    let actions = {
+        1: function (backToMainMenu) {
+            rl.question('enter user details with this format: USERNAME,AGE,PASSWORD: ',
+                function (userDetails) {
+                    addOrUpdateUser(userDetails.split(','));
+                    backToMainMenu();
+                });
+        },
+        2: function (backToMainMenu) {
+            rl.question('enter username to remove: ', function (username) {
+                removeUser(username);
+                backToMainMenu();
+            });
+        },
+        3: function (backToMainMenu) {
+            printList();
+            backToMainMenu();
+        }
+    };
 
     // public methods
     return {
         menu: menu,
-        addUser: addOrUpdateUser,
-        removeUser: removeUser,
-        printList: printList,
         getUser: getUser
     };
 
-    // prototyping??
+    // private methods
     function menu(backToMainMenu) {
         utils.showOptions('User');
         utils.readSelectedCommand(function (selection) {
-            switch (selection){
-                case '1':
-                    rl.question('enter user details with this format: USERNAME,AGE,PASSWORD: ',
-                        function (userDetails) {
-                            addOrUpdateUser(userDetails.split(','));
-                            backToMainMenu();
-                        });
-                    break;
-                case '2':
-                    rl.question('enter username to remove: ', function (username) {
-                        removeUser(username);
-                        backToMainMenu();
-                    });
-                    break;
-                case '3':
-                    printList();
-                    backToMainMenu();
-                    break;
-                case '4':
-                    backToMainMenu();
-                    break;
-            }
+            actions[selection] ? actions[selection](backToMainMenu) : backToMainMenu();
         });
     }
 
@@ -70,12 +66,12 @@ function Users(rl) {
     }
 
     function printList() {
-        for(let username in users){
-            console.log('username: '+ username+', age: '+ users[username].age+', password: '+users[username].password);
+        for (let username in users) {
+            console.log('* username: ' + username + ', age: ' + users[username].age + ', password: ' + users[username].password);
         }
     }
 
     function getUser(username) {
-        return users[username]? users[username]: null;
+        return users[username] ? users[username] : null;
     }
 }

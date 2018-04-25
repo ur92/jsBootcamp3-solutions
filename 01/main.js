@@ -17,7 +17,7 @@ let users, groups, utils, actions;
     actions = {
         1: users.menu,
         2: groups.menu,
-        3: groups.manageUsersMenu
+        3: groups.usersToGroupMenu
     };
 
     menu();
@@ -27,11 +27,7 @@ let users, groups, utils, actions;
 function menu() {
     showActions();
     utils.readSelectedCommand(function (selection) {
-        if (selection === '4') {
-            process.exit();
-        }
-
-        actions[selection](menu);
+        actions[selection] ? actions[selection](menu) : process.exit();
     });
 }
 
