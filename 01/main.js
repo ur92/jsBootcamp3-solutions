@@ -25,20 +25,13 @@ let users, groups, utils, actions;
 
 //private methods
 function menu() {
-    showActions();
+    utils.showActions();
     utils.readSelectedCommand(function (selection) {
         actions[selection] ? actions[selection](menu) : process.exit();
     });
 }
 
-function showActions() {
-    console.log('');
-    console.log('=== Available Actions ===');
-    console.log('1. Users Management');
-    console.log('2. Groups Management');
-    console.log('3. User To Group Association');
-    console.log('4. Exit');
-}
+
 
 
 

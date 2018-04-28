@@ -49,6 +49,10 @@ function Groups(rl, users) {
         }
     };
 
+    (function init() {
+        users.on('userDelete', onUserDeleteHandler);
+    })();
+
     // public methods
     return {
         menu: menu,
@@ -64,12 +68,7 @@ function Groups(rl, users) {
     }
 
     function usersToGroupMenu(backToMainMenu) {
-        console.log('');
-        console.log('=== User association Management ===');
-        console.log('1. Add user to group');
-        console.log('2. Remove user from group');
-        console.log('3. List groups and associated users');
-        console.log('4. Back');
+        utils.showUsersToGroupOptions();
 
         utils.readSelectedCommand(function (selection) {
             usersToGroupActions[selection] ? usersToGroupActions[selection](backToMainMenu) : backToMainMenu();
@@ -110,8 +109,14 @@ function Groups(rl, users) {
     }
 
     function removeUserFromGroup(username, groupname) {
-        if (users.getUser(username) && groups[groupname] && groups[groupname][username]) {
+        if (groups[groupname] && groups[groupname][username]) {
             delete groups[groupname][username];
+        }
+    }
+
+    function onUserDeleteHandler(username) {
+        for (let groupname in groups) {
+            removeUserFromGroup(username, groupname);
         }
     }
 }

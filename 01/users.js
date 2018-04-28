@@ -6,6 +6,9 @@ function Users(rl) {
     // private properties
     let users = {};
     const utils = new Utils(rl);
+    let listeners = {
+        userDelete: []
+    };
 
     let actions = {
         1: function (backToMainMenu) {
@@ -30,7 +33,8 @@ function Users(rl) {
     // public methods
     return {
         menu: menu,
-        getUser: getUser
+        getUser: getUser,
+        on: on
     };
 
     // private methods
@@ -62,6 +66,7 @@ function Users(rl) {
     function removeUser(username) {
         if (getUser(username)) {
             delete users[username];
+            trigger('userDelete', username);
         }
     }
 
@@ -73,5 +78,20 @@ function Users(rl) {
 
     function getUser(username) {
         return users[username] ? users[username] : null;
+    }
+
+    function on(eventName, handler) {
+        if(listeners[eventName]){
+            listeners[eventName].push(handler);
+        }
+        else{
+            listeners[eventName]=[handler];
+        }
+    }
+
+    function trigger(eventName, data){
+        if(listeners[eventName] && listeners[eventName].length){
+            listeners[eventName].forEach(handler => handler(data));
+        }
     }
 }
