@@ -1,16 +1,13 @@
 const Users = require('./users');
 
-function Group(groupName) {
-    this.groupName = groupName;
-    this.users = new Users();
-}
-
 module.exports = (function () {
-    // private properties
-    let groups;
+    function Group(groupName) {
+        this.groupName = groupName;
+        this.users = new Users();
+    }
 
     function Groups() {
-        groups = {};
+        this._groups = {};
     }
 
     // public methods
@@ -24,53 +21,54 @@ module.exports = (function () {
         removeUserFromAllGroups
     };
 
+    Groups.Group = Group;
+
     // private mathods
     function addGroup(groupName) {
-        if (!groups[groupName]) {
-            groups[groupName] = new Group(groupName);
+        if (!this._groups[groupName]) {
+            this._groups[groupName] = new Group(groupName);
         }
     }
 
     function removeGroup(groupName) {
-        if (groups[groupName]) {
-            delete groups[groupName];
+        if (this._groups[groupName]) {
+            delete this._groups[groupName];
         }
     }
 
     function printList() {
-        for (let groupname in groups) {
-            if (groups.hasOwnProperty(groupname)) {
+        for (let groupname in this._groups) {
+            if (this._groups.hasOwnProperty(groupname)) {
                 console.log('* ', groupname);
             }
         }
     }
 
     function printGroupsAndUsersList() {
-        for (let groupname in groups) {
-            if (groups.hasOwnProperty(groupname)) {
+        for (let groupname in this._groups) {
+            if (this._groups.hasOwnProperty(groupname)) {
                 console.log('* ', groupname);
-                groups[groupname].users.printList();
+                this._groups[groupname].users.printList();
             }
         }
     }
 
-    function addUserToGroup(username, groupname) {
-        let userToAdd = users.getUser(username);
-        if (userToAdd && groups[groupname]) {
-            groups[groupname].users.addOrUpdate(userToAdd);
+    function addUserToGroup(user, groupname) {
+        if (user && this._groups[groupname]) {
+            this._groups[groupname].users.add(user);
         }
     }
 
     function removeUserFromGroup(username, groupname) {
-        if (groups[groupname] && groups[groupname].users.getUser(username)) {
-            groups[groupname].users.remove(username);
+        if (this._groups[groupname] && this._groups[groupname].users.getUser(username)) {
+            this._groups[groupname].users.remove(username);
         }
     }
 
     function removeUserFromAllGroups(username) {
-        for (let groupname in groups) {
-            if (groups.hasOwnProperty(groupname)) {
-                removeUserFromGroup(username, groupname);
+        for (let groupname in this._groups) {
+            if (this._groups.hasOwnProperty(groupname)) {
+                this.removeUserFromGroup(username, groupname);
             }
         }
     }

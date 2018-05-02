@@ -2,8 +2,8 @@ const Utils = require('../utils');
 const Users = require('../models/users');
 
 module.exports = (function () {
-    // private properties
-    let users, usersUtils, backToMainMenu;
+    // private and static properties
+    let _users, _usersUtils, _backToMainMenu;
 
     // events
     let listeners = {
@@ -11,79 +11,58 @@ module.exports = (function () {
     };
 
     let actions = {
-        1: function (backToMainMenu) {
-            Utils.interactWithUser(function (userDetails) {
-                let newUser = new User(...userDetails.split(','));
-                addOrUpdate(newUser);
-                backToMainMenu();
-            }, Utils.stringsResource.users.createOrUpdate);
+        1: function () {
+            _usersUtils.interactWithUser(function (userDetails) {
+                addOrUpdate(...userDetails.split(','));
+                _backToMainMenu();
+            }, 'createOrUpdate');
         },
-        2: function (backToMainMenu) {
-            Utils.interactWithUser(function (userDetails) {
-                remove(userDetails.split(','));
-                backToMainMenu();
-            }, Utils.stringsResource.users.remove);
+        2: function () {
+            _usersUtils.interactWithUser(function (username) {
+                _users.remove(username);
+                trigger('userDelete', username);
+                _backToMainMenu();
+            }, 'remove');
         },
-        3: function (backToMainMenu) {
-            printList();
-            backToMainMenu();
+        3: function () {
+            _users.printList();
+            _backToMainMenu();
         }
     };
 
     function UsersCtrl(backToMainMenu) {
-        backToMainMenu = backToMainMenu;
-        usersUtils = new Utils('User');
-        users = new Users();
+        _backToMainMenu = backToMainMenu;
+        _usersUtils = new Utils('User');
+        _users = new Users();
     }
 
     // public methods
     UsersCtrl.prototype = {
         menu,
         getUser,
-        addOrUpdate,
-        remove,
-        printList,
         on
     };
 
     // private methods
     function menu() {
-        usersUtils.printTypeMenu();
+        _usersUtils.printTypeMenu();
         Utils.interactWithUser(function (selection) {
-            actions[selection] ? actions[selection](backToMainMenu) : backToMainMenu();
+            actions[selection] ? actions[selection](_backToMainMenu) : _backToMainMenu();
         });
     }
 
-    function addOrUpdate(user) {
-        let userToUpdate = getUser(user.username);
-        if (userToUpdate) { // update
-            userToUpdate.age = user.age || userToUpdate.age;
-            userToUpdate.password = user.password || userToUpdate.password;
-        }
-        else { // create new
-            users[user.username] = user;
-        }
-    }
-
-    function remove(username) {
-        if (getUser(username)) {
-            delete users[username];
-            trigger('userDelete', username);
-        }
-    }
-
-    function printList() {
-        for (let username in users) {
-            if (users.hasOwnProperty(username)) {
-                console.log('* username: ' + username +
-                    ', age: ' + users[username].age +
-                    ', password: ' + users[username].password);
-            }
-        }
-    }
-
     function getUser(username) {
-        return users[username] ? users[username] : null;
+        return _users.getUser(username);
+    }
+
+    function addOrUpdate(username, age, password) {
+        let userToUpdate = _users.getUser(username);
+        if (userToUpdate) { // update
+            _users.update(userToUpdate, age, password);
+        }
+        else { // add
+            _users.add(new Users.User(username, age, password));
+        }
     }
 
     function on(eventName, handler) {

@@ -2,53 +2,57 @@ const Utils = require('../utils');
 const Groups = require('../models/groups');
 
 module.exports = (function () {
-    // private properties
-    let backToMainMenu, groupUtils, groups;
+    // private and static properties
+    let _backToMainMenu, _groupUtils, _groups, _usersCtrl;
 
     let actions = {
         1: function () {
-            groupUtils.interactWithUser(function (groupName) {
-                groups.addGroup(groupName);
-                backToMainMenu();
+            _groupUtils.interactWithUser(function (groupName) {
+                _groups.addGroup(groupName);
+                _backToMainMenu();
             }, 'create');
         },
         2: function () {
-            groupUtils.interactWithUser(function (groupName) {
-                groups.removeGroup(groupName);
-                backToMainMenu();
+            _groupUtils.interactWithUser(function (groupName) {
+                _groups.removeGroup(groupName);
+                _backToMainMenu();
             }, 'remove');
         },
-        3: function (backToMainMenu) {
-            groups.printList();
-            backToMainMenu();
+        3: function () {
+            _groups.printList();
+            _backToMainMenu();
         }
     };
 
     let usersToGroupActions = {
         1: function () {
-            groupUtils.interactWithUser(function (userGroupArgs) {
-                groups.addUserToGroup(...userGroupArgs.split(','));
-                backToMainMenu();
+            _groupUtils.interactWithUser(function (userGroupArgs) {
+                let user = _usersCtrl.getUser(userGroupArgs.split(',')[0]);
+                _groups.addUserToGroup(user, userGroupArgs.split(',')[1]);
+                _backToMainMenu();
             }, 'assignUserToGroup');
         },
         2: function () {
-            groupUtils.interactWithUser(function (userGroupArgs) {
-                groups.removeUserFromGroup(...userGroupArgs.split(','));
-                backToMainMenu();
+            _groupUtils.interactWithUser(function (userGroupArgs) {
+                _groups.removeUserFromGroup(...userGroupArgs.split(','));
+                _backToMainMenu();
             }, 'removeUserFromGroup');
         },
         3: function () {
-            groups.printGroupsAndUsersList();
-            backToMainMenu();
+            _groups.printGroupsAndUsersList();
+            _backToMainMenu();
         }
     };
 
-
     function GroupsCtrl(backToMainMenu, usersCtrl) {
-        backToMainMenu = backToMainMenu;
-        groupUtils = new Utils('Group');
-        groups = new Groups();
-        usersCtrl.on('userDelete', groups.removeUserFromAllGroups);
+        _backToMainMenu = backToMainMenu;
+        _groupUtils = new Utils('Group');
+        _groups = new Groups();
+        _usersCtrl = usersCtrl;
+
+        usersCtrl.on('userDelete', function (username){
+            _groups.removeUserFromAllGroups(username)
+        });
     }
 
     // public methods
@@ -59,21 +63,20 @@ module.exports = (function () {
 
     // private mathods
     function menu(backToMainMenu) {
-        groupUtils.printTypeMenu();
-        groupUtils.interactWithUser(function (selection) {
+        _groupUtils.printTypeMenu();
+        Utils.interactWithUser(function (selection) {
             actions[selection] ? actions[selection](backToMainMenu) : backToMainMenu();
         });
     }
 
     function usersToGroupMenu(backToMainMenu) {
-        groupUtils.printUsersToGroupMenu();
-        groupUtils.interactWithUser(function (selection) {
+        Utils.printUsersToGroupMenu();
+        _groupUtils.interactWithUser(function (selection) {
             usersToGroupActions[selection] ? usersToGroupActions[selection](backToMainMenu) : backToMainMenu();
         });
     }
 
     return GroupsCtrl;
-
 })();
 
 

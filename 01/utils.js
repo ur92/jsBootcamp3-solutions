@@ -4,18 +4,18 @@ module.exports = (function () {
     let rl = readline.createInterface(process.stdin, process.stdout);
 
     function Utils(type) {
-        this.type = type;
+        this._type = type;
     }
 
     // static properties
     Utils.stringsResource = {
-        users: {
+        User: {
             createOrUpdate: 'enter user details with this format: USERNAME,AGE,PASSWORD: ',
             remove: 'enter username to remove: '
 
         },
-        groups:{
-            createOrUpdate: 'enter group name to add: ',
+        Group:{
+            create: 'enter group name to add: ',
             remove: 'enter group name to remove: ',
             assignUserToGroup: 'enter user to add to group like USERNAME,GROUP: ',
             removeUserFromGroup: 'enter user to remove from group like USERNAME,GROUP: '
@@ -35,19 +35,7 @@ module.exports = (function () {
         console.log('4. Exit');
     };
 
-    Utils.interactWithUser= function (onSelectionCallback, path) {
-        let question = '';
-        if(arguments.length<2 || !!path){
-            question = Utils.stringsResource.general.choose;
-        }
-        else if(type){
-            question = Utils.stringsResource[type][path];
-        }
-
-        rl.question(question, function (selectedActionNumber) {
-            onSelectionCallback(selectedActionNumber);
-        });
-    };
+    Utils.interactWithUser = interactWithUser;
 
     Utils.printUsersToGroupMenu= function () {
         console.log('');
@@ -60,17 +48,33 @@ module.exports = (function () {
 
     // public methods
     Utils.prototype = {
-        printTypeMenu
+        printTypeMenu,
+        interactWithUser
     };
 
     // private methods
     function printTypeMenu() {
         console.log('');
-        console.log('=== ' + this.type + ' Management ===');
-        console.log('1. Create ' + ((this.type === 'User') ? 'or Update ' + this.type : this.type));
-        console.log('2. Delete ' + this.type);
-        console.log('3. List ' + this.type + 's');
+        console.log('=== ' + this._type + ' Management ===');
+        console.log('1. Create ' + ((this._type === 'User') ? 'or Update ' + this._type : this._type));
+        console.log('2. Delete ' + this._type);
+        console.log('3. List ' + this._type + 's');
         console.log('4. Back');
+    }
+
+    function interactWithUser(onSelectionCallback, path) {
+        rl.question(getStringByPath(path, this._type), function (selectedActionNumber) {
+            onSelectionCallback(selectedActionNumber);
+        });
+    }
+
+    function getStringByPath(path, type) {
+        if(type && path && Utils.stringsResource[type]){
+            return Utils.stringsResource[type][path];
+        }
+        else {
+            return Utils.stringsResource.general.choose;
+        }
     }
 
     return Utils;

@@ -1,56 +1,53 @@
-function User(username, age, password) {
-    this.username = username;
-    this.age = age;
-    this.password = password;
-}
-
 module.exports = (function () {
-    // private properties
-    let users;
+    function User(username, age, password) {
+        this.username = username;
+        this.age = age;
+        this.password = password;
+    }
 
     function Users() {
-        users = {};
+        this._users = {};
     }
 
     // public methods
     Users.prototype = {
         getUser,
-        addOrUpdate,
+        add,
+        update,
         remove,
         printList,
     };
 
+    Users.User = User;
+
     // private methods
-    function addOrUpdate(user) {
-        let userToUpdate = getUser(user.username);
-        if (userToUpdate) { // update
-            userToUpdate.age = user.age || userToUpdate.age;
-            userToUpdate.password = user.password || userToUpdate.password;
-        }
-        else { // create new
-            users[user.username] = user;
-        }
+    function add(user) {
+        this._users[user.username] = user;
+    }
+
+    function update(user, age, password) {
+        user.age = age || user.age;
+        user.password = password || user.password;
     }
 
     function remove(username) {
-        if (getUser(username)) {
-            delete users[username];
-            trigger('userDelete', username);
+        if (this.getUser(username)) {
+            delete this._users[username];
         }
     }
 
     function printList() {
-        for (let username in users) {
-            if (users.hasOwnProperty(username)) {
-                console.log('* username: ' + username +
-                    ', age: ' + users[username].age +
-                    ', password: ' + users[username].password);
+        for (let username in this._users) {
+            if (this._users.hasOwnProperty(username)) {
+                console.log('*** username: ' + username +
+                    ', age: ' + this._users[username].age +
+                    ', password: ' + this._users[username].password);
             }
         }
     }
 
     function getUser(username) {
-        return users[username] ? users[username] : null;
+        return this._users[username] ? this._users[username] : null;
     }
 
     return Users;
