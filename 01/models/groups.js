@@ -21,7 +21,6 @@ module.exports = (function () {
         removeUserFromAllGroups
     };
 
-    Groups.Group = Group;
 
     // private mathods
     function addGroup(groupName) {

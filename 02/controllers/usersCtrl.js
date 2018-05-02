@@ -13,7 +13,7 @@ module.exports = (function () {
     let actions = {
         1: function () {
             _usersUtils.interactWithUser(function (userDetails) {
-                addOrUpdate(...userDetails.split(','));
+                _users.addOrUpdate(...userDetails.split(','));
                 _backToMainMenu();
             }, 'createOrUpdate');
         },
@@ -53,16 +53,6 @@ module.exports = (function () {
 
     function getUser(username) {
         return _users.getUser(username);
-    }
-
-    function addOrUpdate(username, age, password) {
-        let userToUpdate = _users.getUser(username);
-        if (userToUpdate) { // update
-            _users.update(userToUpdate, age, password);
-        }
-        else { // add
-            _users.add(new Users.User(username, age, password));
-        }
     }
 
     function on(eventName, handler) {

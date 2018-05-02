@@ -12,15 +12,24 @@ module.exports = (function () {
     // public methods
     Users.prototype = {
         getUser,
+        addOrUpdate,
         add,
         update,
         remove,
         printList,
     };
 
-    Users.User = User;
-
     // private methods
+    function addOrUpdate(username, age, password) {
+        let userToUpdate = this.getUser(username);
+        if (userToUpdate) { // update
+            this.update(userToUpdate, age, password);
+        }
+        else { // add
+            this.add(new User(username, age, password));
+        }
+    }
+
     function add(user) {
         this._users[user.username] = user;
     }
