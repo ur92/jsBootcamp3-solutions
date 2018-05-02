@@ -1,4 +1,5 @@
 const Users = require('./users');
+const Tree = require('./tree');
 
 module.exports = (function () {
     function Group(groupName) {
@@ -7,7 +8,8 @@ module.exports = (function () {
     }
 
     function Groups() {
-        this._groups = {};
+        this._groups = new Tree();
+        this._groups.add(new Group('root'));
     }
 
     // public methods
@@ -20,8 +22,6 @@ module.exports = (function () {
         removeUserFromGroup,
         removeUserFromAllGroups
     };
-
-    Groups.Group = Group;
 
     // private mathods
     function addGroup(groupName) {
