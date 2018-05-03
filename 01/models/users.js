@@ -23,26 +23,36 @@ module.exports = (function () {
     function addOrUpdate(username, age, password) {
         let userToUpdate = this.getUser(username);
         if (userToUpdate) { // update
-            this.update(userToUpdate, age, password);
+            return this.update(userToUpdate, age, password);
         }
         else { // add
-            this.add(new User(username, age, password));
+            return this.add(new User(username, age, password));
         }
     }
 
     function add(user) {
-        this._users[user.username] = user;
+        if (user && user instanceof User && user.username) {
+            this._users[user.username] = user;
+            return true;
+        }
+        return false;
     }
 
     function update(user, age, password) {
-        user.age = age || user.age;
-        user.password = password || user.password;
+        if (user && user instanceof User && age && password) {
+            user.age = age || user.age;
+            user.password = password || user.password;
+            return true;
+        }
+        return false;
     }
 
     function remove(username) {
         if (this.getUser(username)) {
             delete this._users[username];
+            return true;
         }
+        return false;
     }
 
     function printList() {

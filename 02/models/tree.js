@@ -1,11 +1,12 @@
 module.exports = (function () {
-       function Node(data) {
+    function Node(data) {
         this.data = data;
-        this.children = [];
+        this.children = {};
     }
 
-    function Tree() {
+    function Tree(getUniqueKey) {
         this.root = null;
+        this.getUniqueKey = getUniqueKey;
     }
 
     Tree.prototype = {
@@ -25,7 +26,7 @@ module.exports = (function () {
         let node = new Node(data);
         let parent = toNodeData ? this.findBFS(toNodeData) : null;
         if (parent) {
-            parent.children.push(node);
+            parent.children[this.getUniqueKey(data)] = node;
         } else {
             if (!this.root) {
                 this.root = node;
@@ -43,7 +44,7 @@ module.exports = (function () {
         let queue = [this.root];
         while (queue.length) {
             let node = queue.shift();
-            for (let i = 0; i < node.children.length; i++) {
+            for (let i = 0; i < Object.keys(node.children).length; i++) {
                 if (node.children[i].data === data) {
                     node.children.splice(i, 1);
                 } else {

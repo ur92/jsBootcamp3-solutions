@@ -12,21 +12,22 @@ module.exports = (function () {
         User: {
             createOrUpdate: 'enter user details with this format: USERNAME,AGE,PASSWORD: ',
             remove: 'enter username to remove: '
-
         },
-        Group:{
+        Group: {
             create: 'enter group name to add: ',
             remove: 'enter group name to remove: ',
             assignUserToGroup: 'enter user to add to group like USERNAME,GROUP: ',
             removeUserFromGroup: 'enter user to remove from group like USERNAME,GROUP: '
         },
         general: {
-            choose: 'Choose the action by number:'
+            choose: 'Choose the action by number:',
+            doneSuccessfully: 'done!',
+            doneWithErrors: 'Oh... somethings gone awry'
         }
     };
 
     // static methods
-    Utils.printMainMenu= function () {
+    Utils.printMainMenu = function () {
         console.log('');
         console.log('=== Available Actions ===');
         console.log('1. Users Management');
@@ -36,8 +37,9 @@ module.exports = (function () {
     };
 
     Utils.interactWithUser = interactWithUser;
+    Utils.printDoneMessage = printDoneMessage;
 
-    Utils.printUsersToGroupMenu= function () {
+    Utils.printUsersToGroupMenu = function () {
         console.log('');
         console.log('=== User association Management ===');
         console.log('1. Add user to group');
@@ -69,12 +71,17 @@ module.exports = (function () {
     }
 
     function getStringByPath(path, type) {
-        if(type && path && Utils.stringsResource[type]){
+        if (type && path && Utils.stringsResource[type]) {
             return Utils.stringsResource[type][path];
         }
         else {
             return Utils.stringsResource.general.choose;
         }
+    }
+
+    function printDoneMessage(isActionSucceeded) {
+        let path = isActionSucceeded ? 'doneSuccessfully' : 'doneWithErrors';
+        console.log(getStringByPath(path, 'general'));
     }
 
     return Utils;

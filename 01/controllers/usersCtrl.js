@@ -13,13 +13,17 @@ module.exports = (function () {
     let actions = {
         1: function () {
             _usersUtils.interactWithUser(function (userDetails) {
-                _users.addOrUpdate(...userDetails.split(','));
+                Utils.printDoneMessage(
+                    _users.addOrUpdate(...userDetails.split(','))
+                );
                 _backToMainMenu();
             }, 'createOrUpdate');
         },
         2: function () {
             _usersUtils.interactWithUser(function (username) {
-                _users.remove(username);
+                Utils.printDoneMessage(
+                    _users.remove(username)
+                );
                 trigger('userDelete', username);
                 _backToMainMenu();
             }, 'remove');
@@ -67,7 +71,7 @@ module.exports = (function () {
     function trigger(eventName, data) {
         if (listeners[eventName] && listeners[eventName].length) {
             listeners[eventName].forEach(handler => {
-                if(!!handler && typeof handler === 'function'){
+                if (!!handler && typeof handler === 'function') {
                     handler(data);
                 }
             });

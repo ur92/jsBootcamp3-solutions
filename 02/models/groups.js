@@ -73,6 +73,10 @@ module.exports = (function () {
         }
     }
 
+    function getUniqueKey(group) {
+        return group.groupName;
+    }
+
     return Groups;
 })();
 
