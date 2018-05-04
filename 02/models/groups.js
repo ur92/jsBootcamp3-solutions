@@ -1,5 +1,5 @@
 const Users = require('./users');
-const Tree = require('./tree');
+const Node = require('./node')(group => group.groupName);
 
 module.exports = (function () {
     function Group(groupName) {
@@ -8,8 +8,9 @@ module.exports = (function () {
     }
 
     function Groups() {
-        this._groups = new Tree();
-        this._groups.add(new Group('root'));
+        this._groups = new Node('root');
+
+        mock(this._groups);
     }
 
     // public methods
@@ -24,6 +25,15 @@ module.exports = (function () {
     };
 
     // private mathods
+    function mock(rootNode) {
+        rootNode.add(new Group('one')).add(new Group('one-one'));
+        let two = rootNode.add(new Group('two'));
+        two.add(new Group('two-one'));
+        two.add(new Group('two-two'));
+
+        let list = rootNode.getList();
+    }
+
     function addGroup(groupName) {
         if (!this._groups[groupName]) {
             this._groups[groupName] = new Group(groupName);
@@ -45,12 +55,13 @@ module.exports = (function () {
     }
 
     function printGroupsAndUsersList() {
-        for (let groupname in this._groups) {
+        /*for (let groupname in this._groups) {
             if (this._groups.hasOwnProperty(groupname)) {
                 console.log('* ', groupname);
                 this._groups[groupname].users.printList();
             }
-        }
+        }*/
+        this._groups.print();
     }
 
     function addUserToGroup(user, groupname) {

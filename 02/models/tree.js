@@ -1,19 +1,18 @@
 module.exports = (function () {
     function Node(data) {
         this.data = data;
-        this.children = {};
+        this.children = [];
     }
 
-    function Tree(getUniqueKey) {
+    function Tree() {
         this.root = null;
-        this.getUniqueKey = getUniqueKey;
     }
 
     Tree.prototype = {
         add,
         remove,
         contains,
-        findBFS,
+        findBFS: search,
         _preOrder,
         _postOrder,
         traverseBFS,
@@ -24,9 +23,9 @@ module.exports = (function () {
 
     function add(data, toNodeData) {
         let node = new Node(data);
-        let parent = toNodeData ? this.findBFS(toNodeData) : null;
+        let parent = toNodeData ? this.search(toNodeData) : null;
         if (parent) {
-            parent.children[this.getUniqueKey(data)] = node;
+            parent.children.push(node);
         } else {
             if (!this.root) {
                 this.root = node;
@@ -34,17 +33,18 @@ module.exports = (function () {
                 return 'Root node is already assigned';
             }
         }
+
     }
 
-    function remove(data) {
+    function remove(data, startFromNode) {
         if (this.root.data === data) {
             this.root = null;
         }
 
-        let queue = [this.root];
+        let queue = startFromNode? [startFromNode]: [this.root];
         while (queue.length) {
             let node = queue.shift();
-            for (let i = 0; i < Object.keys(node.children).length; i++) {
+            for (let i = 0; i < node.children.length; i++) {
                 if (node.children[i].data === data) {
                     node.children.splice(i, 1);
                 } else {
@@ -55,10 +55,10 @@ module.exports = (function () {
     }
 
     function contains(data) {
-        return !!this.findBFS(data);
+        return !!this.search(data);
     }
 
-    function findBFS(data) {
+    function search(data) {
         let queue = [this.root];
         while (queue.length) {
             let node = queue.shift();
