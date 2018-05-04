@@ -8,7 +8,7 @@ module.exports = (function () {
     }
 
     function Groups() {
-        this._groups = new Node('root');
+        this._groups = new Node(new Group('root'));
 
         mock(this._groups);
     }
@@ -32,6 +32,12 @@ module.exports = (function () {
         two.add(new Group('two-two'));
 
         let list = rootNode.getList();
+        for(let path in list){
+            let pathArr =path.split(',');
+            let groupName = pathArr.pop();
+            let identation = pathArr.reduce((prev)=>prev+'--','');
+            console.log(identation+' '+ groupName);
+        }
     }
 
     function addGroup(groupName) {

@@ -31,7 +31,7 @@ const NodeFactory = function (getUniqueKey) {
             delete this.children[key];
         }
 
-        if(isDeepRemove){
+        if (isDeepRemove) {
             for (let childKey in this.children) {
                 this.children[childKey].remove(data, isDeepRemove);
             }
@@ -41,25 +41,48 @@ const NodeFactory = function (getUniqueKey) {
     function search(data, isDeepSearch, parentPath) {
         isDeepSearch = (typeof isDeepSearch === 'undefined') ? true : isDeepSearch;
         const key = getUniqueKey(data);
-        const results = {};
+        let results = {};
 
-        parentPath = (typeof parentPath === 'undefined') ? [key] : parentPath.push(key);
+        if (typeof parentPath === 'undefined') {
+            parentPath = [key];
+            if (getUniqueKey(this.data) === key) { // if the root node is matching the search
+                results[parentPath] = this;
+            }
+        }
+        else {
+            parentPath.push(key);
+        }
 
-        if (this.children[key]) {
+        if (this.children[key]) { // search immediate children
             results[parentPath] = this.children[key];
         }
 
-        if (isDeepSearch) {
+        if (isDeepSearch) { // recursive search
             for (let childKey in this.children) {
-                Object.assign(results, this.children[childKey].search(data, isDeepSearch, parentPath));
+                results = Object.assign(results, this.children[childKey].search(data, isDeepSearch, parentPath));
             }
         }
 
         return results;
     }
 
-    function getList(){
-        return this.search('', true, 'root');
+    function getList(parentPath) {
+        let results = {};
+        const key = getUniqueKey(this.data);
+
+        (typeof parentPath === 'undefined') ? parentPath = [key] : parentPath.push(key);
+
+        results[parentPath] = this;
+        if (Object.keys(this.children).length) {
+            for (let childKey in this.children) {
+                results = Object.assign(results, this.children[childKey].getList(parentPath));
+            }
+        }
+        else {
+            // return {[parentPath] : this};
+        }
+
+        return results;
     }
 
     return Node;
