@@ -68,12 +68,6 @@ const NodeFactory = function (getUniqueKey) {
         return this.dfsScan(()=>true);
     }
 
-
-
-    function bubble(forEachNodeInPath) {
-
-    }
-
     return Node;
 };
 
