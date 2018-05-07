@@ -62,11 +62,11 @@ module.exports = (function () {
     function _keyPress(str) {
         let currentGroup = this._getCurrentGroup();
         switch (str) {
-            case '[':
+            case ',':
                 this._currentRow > 0 ? this._currentRow-- : null;
                 this.render();
                 break;
-            case ']':
+            case '.':
                 this._currentRow < (this._rows.length - 1) ? this._currentRow++ : null;
                 this.render();
                 break;
@@ -82,6 +82,12 @@ module.exports = (function () {
             case 'p':
                 this._actions.removeUser(currentGroup);
                 break;
+            case 'y':
+                this._actions.searchUser();
+                break;
+            case 't':
+                this._actions.searchGroup();
+                break;
             case 'c':
             default:
                 this._actions.backToMainMenu();
@@ -93,22 +99,27 @@ module.exports = (function () {
         console.clear();
 
         let currentGroup = this._getCurrentGroup();
-        let menuOptions = [];
-        menuOptions.push(this._treeUtils.getStringByPath('mainMenu'));
-        menuOptions.push(this._treeUtils.getStringByPath('up'));
-        menuOptions.push(this._treeUtils.getStringByPath('down'));
+        let dynamicOptions = [];
+        let staticOptions = [];
+        staticOptions.push(this._treeUtils.getStringByPath('up'));
+        staticOptions.push(this._treeUtils.getStringByPath('down'));
+        staticOptions.push(this._treeUtils.getStringByPath('searchUser'));
+        staticOptions.push(this._treeUtils.getStringByPath('searchGroup'));
+        staticOptions.push(this._treeUtils.getStringByPath('mainMenu'));
 
         if(_isLeafGroup(currentGroup)){
-            menuOptions.push(this._treeUtils.getStringByPath('addUser'));
-            menuOptions.push(this._treeUtils.getStringByPath('removeUser'));
+            dynamicOptions.push(this._treeUtils.getStringByPath('addUser'));
+            dynamicOptions.push(this._treeUtils.getStringByPath('removeUser'));
         }
         if(!_hasUsers(currentGroup)){
-            menuOptions.push(this._treeUtils.getStringByPath('addGroup'));
+            dynamicOptions.push(this._treeUtils.getStringByPath('addGroup'));
         }
 
-        menuOptions.push(this._treeUtils.getStringByPath('removeGroup'));
-        console.log(menuOptions.join('  '));
-        console.log('==================');
+        dynamicOptions.push(this._treeUtils.getStringByPath('removeGroup'));
+        console.log(staticOptions.join('  '));
+        console.log('--------------------------------------------');
+        console.log(dynamicOptions.join('  '));
+        console.log('============================================');
     }
 
     function _isLeafGroup(group) {

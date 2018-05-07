@@ -22,6 +22,20 @@ module.exports = (function () {
             Utils.printDoneMessage(
                 _groups.removeGroup(currentGroup));
             menu();
+        },
+        3: function () {
+            _groupUtils.interactWithUser((username) => {
+                let searchResults = _group.searchUser(username);
+
+                menu();
+            }, 'searchForUser');
+        },
+        4: function () {
+            _groupUtils.interactWithUser((groupName) => {
+                let searchResults = _group.searchGroup(groupName);
+
+                menu();
+            }, 'searchForGroup');
         }
     };
 
@@ -62,6 +76,8 @@ module.exports = (function () {
             removeGroup: actions[2],
             addUser: usersToGroupActions[1],
             removeUser: usersToGroupActions[2],
+            searchUser: actions[3],
+            searchGroup: actions[4],
             backToMainMenu
         });
     }
@@ -71,7 +87,7 @@ module.exports = (function () {
         menu
     };
 
-    // private mathods
+    // private methods
     function menu() {
         let data = _groups.getList();
         _treeComponent.render(data);

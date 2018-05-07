@@ -67,8 +67,16 @@ module.exports = (function () {
         }
     }
 
-    function search(groupName) {
-        return this._rootGroup.search(groupName);
+    function searchGroup(groupName) {
+        return this._rootGroup.dfsScan(function (node) {
+            return node.getData().groupName === groupName;
+        });
+    }
+
+    function searchUser(username) {
+        return this._rootGroup.dfsScan(function (node) {
+            return !!node.getData().users.getUser(username);
+        });
     }
 
     function resetUsersCount(leafs) {

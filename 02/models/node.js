@@ -11,10 +11,9 @@ const NodeFactory = function (getUniqueKey) {
         hasChildren,
         add,
         remove,
-        search,
         getAll,
         getLeafs,
-        _dfsScan,
+        dfsScan,
     };
 
     function getParent() {
@@ -41,17 +40,7 @@ const NodeFactory = function (getUniqueKey) {
         delete this._parent;
     }
 
-    function search(data) {
-        let condition;
-        if (data != null && typeof data === 'object') {
-            condition = node => (node._data === data);
-        } else {
-            condition = node => (getUniqueKey(node._data) === data);
-        }
-        return this._dfsScan(condition);
-    }
-
-    function _dfsScan(aggregationCondition) {
+    function dfsScan(aggregationCondition) {
         let results = [];
         aggregationCondition = aggregationCondition || (() => true);
 
@@ -61,7 +50,7 @@ const NodeFactory = function (getUniqueKey) {
 
         if (this.hasChildren()) {
             for (let childKey in this._children) {
-                results = results.concat(this._children[childKey]._dfsScan(aggregationCondition));
+                results = results.concat(this._children[childKey].dfsScan(aggregationCondition));
             }
         }
         return results;
@@ -72,11 +61,11 @@ const NodeFactory = function (getUniqueKey) {
     }
 
     function getLeafs() {
-        return this._dfsScan(node => (!node.hasChildren()));
+        return this.dfsScan(node => (!node.hasChildren()));
     }
 
     function getAll() {
-        return this._dfsScan(()=>true);
+        return this.dfsScan(()=>true);
     }
 
 

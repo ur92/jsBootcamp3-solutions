@@ -17,16 +17,20 @@ module.exports = (function () {
         Group:{
             create: 'enter group name to add: ',
             assignUserToGroup: 'enter username to add to group: ',
-            removeUserFromGroup: 'enter username to remove from group: '
+            removeUserFromGroup: 'enter username to remove from group: ',
+            searchForGroup: 'enter group name to search for: ',
+            searchForUser: 'enter username to search for: '
         },
         Tree:{
-            addGroup: 'u: Add Group',
-            removeGroup: 'i: Remove Group',
-            addUser: 'o: Add User',
-            removeUser: 'p: Remove User',
-            mainMenu: 'c: Main Menu',
-            down: ']: Down',
-            up: '[: Up'
+            addGroup: '[u] Add Group',
+            removeGroup: '[i] Remove Group',
+            addUser: '[o] Add User',
+            removeUser: '[p] Remove User',
+            mainMenu: '[c] Main Menu',
+            searchUser: '[y] Search User',
+            searchGroup: '[t] Search Group',
+            down: '[.] Down',
+            up: '[,] Up'
         },
         general: {
             choose: 'Choose the action by number:',
