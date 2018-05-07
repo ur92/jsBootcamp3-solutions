@@ -6,8 +6,7 @@ module.exports = (function () {
     // private and static properties
     let _backToMainMenu, _groupUtils, _groups, _usersCtrl, _treeComponent;
 
-    let actions = {
-        1: function (currentGroup) {
+    function addGroup(currentGroup) {
             _groupUtils.interactWithUser((groupName) => {
                 if (currentGroup.users.count()===0) {
                     Utils.printDoneMessage(
@@ -17,30 +16,28 @@ module.exports = (function () {
                 }
                 menu();
             }, 'create');
-        },
-        2: function (currentGroup) {
+        }
+        function removeGroup(currentGroup) {
             Utils.printDoneMessage(
                 _groups.removeGroup(currentGroup));
             menu();
-        },
-        3: function () {
+        }
+        function searchUser() {
             _groupUtils.interactWithUser((username) => {
                 let searchResults = _group.searchUser(username);
 
                 menu();
             }, 'searchForUser');
-        },
-        4: function () {
+        }
+        function searchGroup() {
             _groupUtils.interactWithUser((groupName) => {
                 let searchResults = _group.searchGroup(groupName);
 
                 menu();
             }, 'searchForGroup');
         }
-    };
 
-    let usersToGroupActions = {
-        1: function(currentGroup) {
+        function addUser(currentGroup) {
             _groupUtils.interactWithUser(function (username) {
                 let user = _usersCtrl.getUser(username);
                 if (currentGroup.isLeaf && user) {
@@ -52,14 +49,13 @@ module.exports = (function () {
                 }
                 menu();
             }, 'assignUserToGroup');
-        },
-        2: function (currentGroup) {
+        }
+        function removeUser(currentGroup) {
             _groupUtils.interactWithUser(function (username) {
                 Utils.printDoneMessage(currentGroup.users.remove(username));
                 menu();
             }, 'removeUserFromGroup');
         }
-    };
 
     function GroupsCtrl(backToMainMenu, usersCtrl) {
         _backToMainMenu = backToMainMenu;
@@ -72,12 +68,12 @@ module.exports = (function () {
         });
 
         _treeComponent = new TreeComponent({
-            addGroup: actions[1],
-            removeGroup: actions[2],
-            addUser: usersToGroupActions[1],
-            removeUser: usersToGroupActions[2],
-            searchUser: actions[3],
-            searchGroup: actions[4],
+            addGroup,
+            removeGroup,
+            addUser,
+            removeUser,
+            searchUser,
+            searchGroup,
             backToMainMenu
         });
     }
