@@ -18,12 +18,12 @@ module.exports = (function () {
         _printList
     };
 
-    function render(treeList) {
+    function render(treeList, showFullPath) {
         if (treeList) {
             this._rows = _renderTreeRows(treeList);
         }
         this._printMenu();
-        this._printList();
+        this._printList(showFullPath);
 
         Utils.interactWithUser((selection) => {
             this._keyPress(selection);
@@ -48,7 +48,7 @@ module.exports = (function () {
         });
     }
 
-    function _printList() {
+    function _printList(showFullPath) {
         this._rows.forEach((row, index) => {
             if (this._currentRow === index) {
                 console.log('\x1b[31m%s\x1b[0m', row.label);

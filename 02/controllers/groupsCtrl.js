@@ -24,16 +24,18 @@ module.exports = (function () {
         }
         function searchUser() {
             _groupUtils.interactWithUser((username) => {
-                let searchResults = _group.searchUser(username);
-
-                menu();
+                let searchResults = _groups.searchUser(username);
+                let data = _groups.getList(searchResults);
+                _treeComponent.render(data);
+                // menu();
             }, 'searchForUser');
         }
         function searchGroup() {
             _groupUtils.interactWithUser((groupName) => {
-                let searchResults = _group.searchGroup(groupName);
-
-                menu();
+                let searchResults = _groups.searchGroup(groupName);
+                let data = _groups.getList(searchResults);
+                _treeComponent.render(data);
+                // menu();
             }, 'searchForGroup');
         }
 

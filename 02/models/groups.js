@@ -18,6 +18,8 @@ module.exports = (function () {
         addGroup,
         removeGroup,
         getList,
+        searchGroup,
+        searchUser,
         removeUserFromAllGroups
     };
 
@@ -49,7 +51,7 @@ module.exports = (function () {
     }
 
     function addGroup(parentGroup, groupName) {
-        let parent = this._rootGroup.search(parentGroup).pop();
+        let parent = this._rootGroup.dfsScan(node=> node.getData() === parentGroup).pop();
         if (parent && parent.getData().users.count() === 0) {
             parent.add(new Group(groupName));
             return true;
@@ -58,7 +60,7 @@ module.exports = (function () {
     }
 
     function removeGroup(group) {
-        let node = this._rootGroup.search(group).pop();
+        let node = this._rootGroup.dfsScan(node=> node.getData() === parentGroup).pop();
         if (node) {
             node.remove();
             return true;
@@ -69,7 +71,7 @@ module.exports = (function () {
 
     function searchGroup(groupName) {
         return this._rootGroup.dfsScan(function (node) {
-            return node.getData().groupName === groupName;
+            return node.getData().groupName.indexOf(groupName)>-1;
         });
     }
 
