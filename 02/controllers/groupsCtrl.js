@@ -1,46 +1,49 @@
-const Utils = require('../utils');
+const Utils = require('../view/utils');
 const Groups = require('../models/groups');
+const TreeComponent = require('../view/treeComponent');
 
 module.exports = (function () {
     // private and static properties
-    let _backToMainMenu, _groupUtils, _groups, _usersCtrl;
+    let _backToMainMenu, _groupUtils, _groups, _usersCtrl, _treeComponent;
 
     let actions = {
-        1: function () {
-            _groupUtils.interactWithUser(function (groupName) {
-                _groups.addGroup(groupName);
-                _backToMainMenu();
+        1: function (currentGroup) {
+            _groupUtils.interactWithUser((groupName) => {
+                if (currentGroup.users.count()===0) {
+                    Utils.printDoneMessage(
+                        _groups.addGroup(currentGroup, groupName));
+                }else {
+                    Utils.printDoneMessage(false);
+                }
+                menu();
             }, 'create');
         },
-        2: function () {
-            _groupUtils.interactWithUser(function (groupName) {
-                _groups.removeGroup(groupName);
-                _backToMainMenu();
-            }, 'remove');
-        },
-        3: function () {
-            _groups.printList();
-            _backToMainMenu();
+        2: function (currentGroup) {
+            Utils.printDoneMessage(
+                _groups.removeGroup(currentGroup));
+            menu();
         }
     };
 
     let usersToGroupActions = {
-        1: function () {
-            _groupUtils.interactWithUser(function (userGroupArgs) {
-                let user = _usersCtrl.getUser(userGroupArgs.split(',')[0]);
-                _groups.addUserToGroup(user, userGroupArgs.split(',')[1]);
-                _backToMainMenu();
+        1: function(currentGroup) {
+            _groupUtils.interactWithUser(function (username) {
+                let user = _usersCtrl.getUser(username);
+                if (currentGroup.isLeaf && user) {
+                    Utils.printDoneMessage(
+                        currentGroup.users.add(user));
+                }
+                else {
+                    Utils.printDoneMessage(false);
+                }
+                menu();
             }, 'assignUserToGroup');
         },
-        2: function () {
-            _groupUtils.interactWithUser(function (userGroupArgs) {
-                _groups.removeUserFromGroup(...userGroupArgs.split(','));
-                _backToMainMenu();
+        2: function (currentGroup) {
+            _groupUtils.interactWithUser(function (username) {
+                Utils.printDoneMessage(currentGroup.users.remove(username));
+                menu();
             }, 'removeUserFromGroup');
-        },
-        3: function () {
-            _groups.printGroupsAndUsersList();
-            _backToMainMenu();
         }
     };
 
@@ -50,30 +53,28 @@ module.exports = (function () {
         _groups = new Groups();
         _usersCtrl = usersCtrl;
 
-        usersCtrl.on('userDelete', function (username){
+        usersCtrl.on('userDelete', function (username) {
             _groups.removeUserFromAllGroups(username)
+        });
+
+        _treeComponent = new TreeComponent({
+            addGroup: actions[1],
+            removeGroup: actions[2],
+            addUser: usersToGroupActions[1],
+            removeUser: usersToGroupActions[2],
+            backToMainMenu
         });
     }
 
     // public methods
     GroupsCtrl.prototype = {
-        menu,
-        usersToGroupMenu
+        menu
     };
 
     // private mathods
-    function menu(backToMainMenu) {
-        _groupUtils.printTypeMenu();
-        Utils.interactWithUser(function (selection) {
-            actions[selection] ? actions[selection](backToMainMenu) : backToMainMenu();
-        });
-    }
-
-    function usersToGroupMenu(backToMainMenu) {
-        Utils.printUsersToGroupMenu();
-        _groupUtils.interactWithUser(function (selection) {
-            usersToGroupActions[selection] ? usersToGroupActions[selection](backToMainMenu) : backToMainMenu();
-        });
+    function menu() {
+        let data = _groups.getList();
+        _treeComponent.render(data);
     }
 
     return GroupsCtrl;

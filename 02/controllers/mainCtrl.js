@@ -1,5 +1,5 @@
 // dependencies
-const Utils = require('../utils');
+const Utils = require('../view/utils');
 const UsersCtrl = require('./usersCtrl');
 const GroupsCtrl = require('./groupsCtrl');
 
@@ -14,7 +14,6 @@ module.exports = (function () {
         actions = {
             1: usersCtrl.menu,
             2: groupsCtrl.menu,
-            3: groupsCtrl.usersToGroupMenu
         };
     }
 

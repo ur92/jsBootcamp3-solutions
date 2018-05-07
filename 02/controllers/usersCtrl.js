@@ -1,4 +1,4 @@
-const Utils = require('../utils');
+const Utils = require('../view/utils');
 const Users = require('../models/users');
 
 module.exports = (function () {
@@ -34,6 +34,8 @@ module.exports = (function () {
         _backToMainMenu = backToMainMenu;
         _usersUtils = new Utils('User');
         _users = new Users();
+        _users.addOrUpdate('bini',44,'dfgdg');
+
     }
 
     // public methods
