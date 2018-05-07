@@ -4,11 +4,6 @@ const Utils = require('./utils');
 module.exports = (function () {
     function TreeComponent(actions) {
         readline.emitKeypressEvents(process.stdin);
-        /*if(process.stdin.setRawMode) {
-            process.stdin.setRawMode(true);
-        }*/
-        /*this._bindedKeyPress = _keyPress.bind(this);
-        process.stdin.on('keypress', this._bindedKeyPress);*/
         this._currentRow = 0;
         this._rows = [];
         this._actions = actions;
@@ -17,13 +12,25 @@ module.exports = (function () {
 
     TreeComponent.prototype = {
         render,
-        getCurrentGroup,
+        _getCurrentGroup,
         _keyPress,
         _printMenu,
         _printList
     };
 
-    function getTreeRows(treeList) {
+    function render(treeList) {
+        if (treeList) {
+            this._rows = _renderTreeRows(treeList);
+        }
+        this._printMenu();
+        this._printList();
+
+        Utils.interactWithUser((selection) => {
+            this._keyPress(selection);
+        });
+    }
+
+    function _renderTreeRows(treeList) {
         return treeList.map(row => {
             let path = row.path;
             let groupName = path.pop();
@@ -52,21 +59,8 @@ module.exports = (function () {
         });
     }
 
-    function render(treeList) {
-        if (treeList) {
-            this._rows = getTreeRows(treeList);
-        }
-        console.clear();
-        this._printMenu();
-        this._printList();
-
-        Utils.interactWithUser((selection) => {
-            this._keyPress(selection);
-        });
-    }
-
     function _keyPress(str) {
-        let currentGroup = this.getCurrentGroup();
+        let currentGroup = this._getCurrentGroup();
         switch (str) {
             case '[':
                 this._currentRow > 0 ? this._currentRow-- : null;
@@ -90,14 +84,15 @@ module.exports = (function () {
                 break;
             case 'c':
             default:
-                // process.stdin.removeListener('keypress', this._bindedKeyPress);
                 this._actions.backToMainMenu();
         }
 
     }
 
     function _printMenu() {
-        let currentGroup = this.getCurrentGroup();
+        console.clear();
+
+        let currentGroup = this._getCurrentGroup();
         let menuOptions = [];
         menuOptions.push(this._treeUtils.getStringByPath('mainMenu'));
         menuOptions.push(this._treeUtils.getStringByPath('up'));
@@ -124,7 +119,7 @@ module.exports = (function () {
         return group.users.count();
     }
 
-    function getCurrentGroup() {
+    function _getCurrentGroup() {
         return this._rows[this._currentRow].group;
     }
 
