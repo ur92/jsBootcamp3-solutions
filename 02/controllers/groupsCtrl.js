@@ -7,57 +7,63 @@ module.exports = (function () {
     let _backToMainMenu, _groupUtils, _groups, _usersCtrl, _treeComponent;
 
     function addGroup(currentGroup) {
-            _groupUtils.interactWithUser((groupName) => {
-                if (currentGroup.users.count()===0) {
-                    Utils.printDoneMessage(
-                        _groups.addGroup(currentGroup, groupName));
-                }else {
-                    Utils.printDoneMessage(false);
-                }
-                menu();
-            }, 'create');
-        }
-        function removeGroup(currentGroup) {
+        _groupUtils.interactWithUser((groupName) => {
             Utils.printDoneMessage(
-                _groups.removeGroup(currentGroup));
+                _groups.addGroup(currentGroup, groupName, currentGroup.users));
             menu();
-        }
-        function searchUser() {
-            _groupUtils.interactWithUser((username) => {
-                let searchResults = _groups.searchUser(username);
-                let data = _groups.getList(searchResults);
-                _treeComponent.render(data);
-                // menu();
-            }, 'searchForUser');
-        }
-        function searchGroup() {
-            _groupUtils.interactWithUser((groupName) => {
-                let searchResults = _groups.searchGroup(groupName);
-                let data = _groups.getList(searchResults);
-                _treeComponent.render(data);
-                // menu();
-            }, 'searchForGroup');
-        }
+        }, 'create');
+    }
 
-        function addUser(currentGroup) {
-            _groupUtils.interactWithUser(function (username) {
-                let user = _usersCtrl.getUser(username);
-                if (currentGroup.isLeaf && user) {
-                    Utils.printDoneMessage(
-                        currentGroup.users.add(user));
-                }
-                else {
-                    Utils.printDoneMessage(false);
-                }
-                menu();
-            }, 'assignUserToGroup');
-        }
-        function removeUser(currentGroup) {
-            _groupUtils.interactWithUser(function (username) {
-                Utils.printDoneMessage(currentGroup.users.remove(username));
-                menu();
-            }, 'removeUserFromGroup');
-        }
+    function removeGroup(currentGroup) {
+        let result = currentGroup.groupName !== 'root' ? _groups.removeGroup(currentGroup) : false;
+        Utils.printDoneMessage(result);
+        menu();
+    }
+
+    function flattenGroup(currentGroup) {
+        Utils.printDoneMessage(
+            _groups.flattenGroup(currentGroup));
+        menu();
+    }
+
+    function searchUser() {
+        _groupUtils.interactWithUser((username) => {
+            let searchResults = _groups.searchUser(username);
+            let data = _groups.getList(searchResults);
+            _treeComponent.render(data);
+            // menu();
+        }, 'searchForUser');
+    }
+
+    function searchGroup() {
+        _groupUtils.interactWithUser((groupName) => {
+            let searchResults = _groups.searchGroup(groupName);
+            let data = _groups.getList(searchResults);
+            _treeComponent.render(data);
+            // menu();
+        }, 'searchForGroup');
+    }
+
+    function addUser(currentGroup) {
+        _groupUtils.interactWithUser(function (username) {
+            let user = _usersCtrl.getUser(username);
+            if (currentGroup.isLeaf && user) {
+                Utils.printDoneMessage(
+                    currentGroup.users.add(user));
+            }
+            else {
+                Utils.printDoneMessage(false);
+            }
+            menu();
+        }, 'assignUserToGroup');
+    }
+
+    function removeUser(currentGroup) {
+        _groupUtils.interactWithUser(function (username) {
+            Utils.printDoneMessage(currentGroup.users.remove(username));
+            menu();
+        }, 'removeUserFromGroup');
+    }
 
     function GroupsCtrl(backToMainMenu, usersCtrl) {
         _backToMainMenu = backToMainMenu;
@@ -72,13 +78,17 @@ module.exports = (function () {
         _treeComponent = new TreeComponent({
             addGroup,
             removeGroup,
+            flattenGroup,
+            searchUser,
             addUser,
             removeUser,
-            searchUser,
             searchGroup,
-            backToMainMenu
-        });
-    }
+            menu,
+            backToMainMenu,
+            hasUsers: _groups.hasUsers,
+            isLeaf: _groups.isLeaf.bind(_groups),
+            canBeFlatten: _groups.canBeFlatten.bind(_groups)
+        });    }
 
     // public methods
     GroupsCtrl.prototype = {

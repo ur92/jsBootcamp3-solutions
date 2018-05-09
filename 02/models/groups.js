@@ -2,9 +2,9 @@ const Users = require('./users');
 const Node = require('./node')(group => group.groupName);
 
 module.exports = (function () {
-    function Group(groupName) {
+    function Group(groupName, users) {
         this.groupName = groupName;
-        this.users = new Users();
+        this.users = users? users: new Users();
     }
 
     function Groups() {
@@ -20,7 +20,11 @@ module.exports = (function () {
         getList,
         searchGroup,
         searchUser,
-        removeUserFromAllGroups
+        removeUserFromAllGroups,
+        hasUsers,
+        isLeaf,
+        canBeFlatten,
+        flattenGroup
     };
 
     // private mathods
@@ -50,17 +54,22 @@ module.exports = (function () {
         twoNode.add(twoTwo);
     }
 
-    function addGroup(parentGroup, groupName) {
-        let parent = this._rootGroup.dfsScan(node=> node.getData() === parentGroup).pop();
-        if (parent && parent.getData().users.count() === 0) {
+    function addGroup(parentGroup, groupName, users) {
+        let parent = this._rootGroup.dfsScan(node => node.getData() === parentGroup).pop();
             parent.add(new Group(groupName));
+        if (parent && parent.getData().users.count() === 0) {
             return true;
         }
-        return false;
+        else{
+            parentGroup.users = new Users();
+            let limboGroup = new Group('limbo', users);
+            parent.add(limboGroup);
+            return true;
+        }
     }
 
     function removeGroup(group) {
-        let node = this._rootGroup.dfsScan(node=> node.getData() === parentGroup).pop();
+        let node = this._rootGroup.dfsScan(node => node.getData() === group).pop();
         if (node) {
             node.remove();
             return true;
@@ -69,9 +78,16 @@ module.exports = (function () {
         }
     }
 
+    function flattenGroup(group) {
+        let node = this._rootGroup.dfsScan(node => node.getData() === group).pop();
+        node.flatten((parentGroup, groupToFlatten)=>{
+            parentGroup.users = groupToFlatten.users;
+        });
+    }
+
     function searchGroup(groupName) {
         return this._rootGroup.dfsScan(function (node) {
-            return node.getData().groupName.indexOf(groupName)>-1;
+            return node.getData().groupName.indexOf(groupName) > -1;
         });
     }
 
@@ -123,10 +139,27 @@ module.exports = (function () {
 
     function removeUserFromAllGroups(username) {
         let res = true;
-        this._rootGroup.getLeafs().forEach(leaf=>{
-            res = res && removeUserFromGroup(leaf.getData(), username);
+        this._rootGroup.getLeafs().forEach(leaf => {
+            res = res && leaf.getData().users.remove(username);
         });
         return res;
+    }
+
+    function hasUsers(group) {
+        return group.users.count() > 0;
+    }
+
+    function isLeaf(group) {
+        let node = this._rootGroup.dfsScan(node => node.getData() === group).pop();
+        return !node.hasChildren();
+    }
+
+    function canBeFlatten(group) {
+        let node = this._rootGroup.dfsScan(node => node.getData() === group).pop();
+        return node &&
+            node.isSingleChild() &&
+            node.getParent() &&
+            !this.hasUsers(node.getParent().getData());
     }
 
     return Groups;

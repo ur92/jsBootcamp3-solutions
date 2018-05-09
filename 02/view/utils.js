@@ -29,6 +29,8 @@ module.exports = (function () {
             mainMenu: '[c] Main Menu',
             searchUser: '[y] Search User',
             searchGroup: '[t] Search Group',
+            menu: '[r] Back to Full Tree',
+            flatten: '[e] Flatten the Group',
             down: '[.] Down',
             up: '[,] Up'
         },

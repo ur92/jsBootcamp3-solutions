@@ -9,11 +9,13 @@ const NodeFactory = function (getUniqueKey) {
         getParent,
         getData,
         hasChildren,
+        isSingleChild,
         add,
         remove,
         getAll,
         getLeafs,
         dfsScan,
+        flatten
     };
 
     function getParent() {
@@ -60,12 +62,25 @@ const NodeFactory = function (getUniqueKey) {
         return Object.keys(this._children).length;
     }
 
+    function isSingleChild() {
+        return !!this._parent && Object.keys(this._parent._children).length === 1;
+    }
+
     function getLeafs() {
         return this.dfsScan(node => (!node.hasChildren()));
     }
 
     function getAll() {
         return this.dfsScan(()=>true);
+    }
+
+    function flatten(mergeFn) {
+        if(this.isSingleChild()) {
+            mergeFn(this._parent._data, this._data);
+            this.remove();
+            return true;
+        }
+        return false;
     }
 
     return Node;
