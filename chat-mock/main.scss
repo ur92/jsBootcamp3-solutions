@@ -1,0 +1,39 @@
+.app-wrapper{
+  display: flex;
+  flex-direction: column;
+  min-height: 98vh;
+  *{
+    border: 1px solid black;
+  }
+  header{
+    background-color: aliceblue;
+  }
+  .main {
+    flex: 1;
+    display: flex;
+
+    aside {
+      //flex: 0 1;
+      flex-basis: 10em;
+      background-color: azure;
+    }
+    .chat {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+      background-color: burlywood;
+
+      .history{
+        flex: 1;
+        //height: 100%;
+      }
+      .input{
+        bottom: 0;
+      }
+    }
+  }
+  footer{
+    flex-basis: 3em;
+    background-color: darkkhaki;
+  }
+}
